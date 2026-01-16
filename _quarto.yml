@@ -1,0 +1,43 @@
+project: 
+  type: website
+  output-dir: docs
+  title: "**Unsung Scientists:** Canadian Citizen Science Data Use Transparency"
+  render: 
+    - "*.qmd"
+
+website: 
+  sidebar: 
+    style: "floating"
+    search: true
+    contents: 
+      - section: Workflow
+        contents: 
+          - auto: "[!X]*.qmd"
+      - section: Appendicies
+        contents: 
+          - "XX_citations.qmd"
+    
+    tools:
+      - icon: github
+        href: https://github.com/elizabeth-porter/citizen_science_transparency
+        target: "_blank"
+  back-to-top-navigation: true
+  page-navigation: true
+  repo-url: https://github.com/elizabeth-porter/citizen_science_transparency
+  repo-actions: [issue]
+
+format:
+  html:
+    author: "Elizabeth Porter"
+    date: today
+    toc: true
+    toc-depth: 4
+    toc-expand: true
+    lightbox: auto
+    callout-icon: false
+    callout-appearance: minimal
+
+execute:
+  freeze: auto
+  
+        

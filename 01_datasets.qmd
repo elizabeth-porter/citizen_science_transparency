@@ -1,0 +1,207 @@
+---
+title: "Data Cleaning and Dataset Creation"
+---
+
+## Background
+
+This is the initial data cleaning and manipulations to create the final datasets used in the [Analysis](02_analysis.html). The final datasets are saved to CSV as:
+
+1) **Unique Publications:** `data/publication_clean.csv` where *each row is an individual publication*, to facilitate analysis at the level of the publication
+
+2) **Citizen Science Project-Publication Cases:** `data/csp_publication_clean.csv` where *each row is a unique citizen science project-publication combination*, to facilitate analysis at the level of the citizen science project
+
+## Setup
+```{r}
+#| message: false
+#| code-fold: false
+{ # load necessary packages & preferred settings
+  library(tidyverse)
+  library(viridis)
+  library(devtools)
+  
+  theme_set(theme_light())}
+```
+
+## Load and Clean Data
+
+### **Included Publications**
+*Literature metadata exported from [Web of Science (WoS) Core Collection](https://access.clarivate.com/login?app=wos&alternative=true&shibShireURL=https:%2F%2Fwww.webofknowledge.com%2F%3Fauth%3DShibboleth&shibReturnURL=https:%2F%2Fwww.webofknowledge.com%2F&roaming=true){target="_blank"}*\
+
+:::{.panel-tabset}
+
+### Load Data
+```{r}
+df_publication = read_csv("data/wos_export.csv") %>% as_tibble()
+
+#view(df_publication)
+```
+
+### Quick Check
+```{r}
+head(df_publication)
+tail(df_publication)
+```
+
+:::
+
+
+### **Journal Impact Factors**
+*from [Clarivate Journal Citation Report](https://clarivate.com/academia-government/scientific-and-academic-research/research-funding-analytics/journal-citation-reports/){target="_blank"}*
+
+First we extracted the names of all the journals that were represented in the included publications.
+```{r}
+#| code-fold: true
+
+journal_list = 
+  df_publication %>% 
+  group_by(source_title) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count))
+
+# Save list as a csv
+write.csv(journal_list, file = "data/journal_list.csv")
+```
+
+Using this list, we searched for each journal in the Clarivate Journal Citation Report database, exported all available journal impact factor data, and merged it into one master file. 
+
+:::{.panel-tabset}
+
+### Load Data
+```{r}
+df_jif = read_csv("data/journal_impact_factors.csv") %>% as_tibble()
+view(df_jif)
+```
+
+### Quick Check
+```{r}
+head(df_jif)
+tail(df_jif)
+```
+
+:::
+
+### **Citizen Science Data**
+
+#### Unique Publications
+
+*Final dataset 1) `data/publication_clean.csv` where *each row is an individual publication*, to facilitate analysis at the level of the publication.*
+
+We joined the journal impact factors to the Web of Science publication metadata, along with a count of citizen science projects used in each publication (exported from Covidence).
+
+```{r}
+#| code-fold: true
+
+df_pub_intermediate = read_csv("data/publication_intermediate.csv")
+
+df_publication_jif = df_pub_intermediate %>% 
+  left_join(
+    df_jif %>% 
+      dplyr::select(source_title, 
+                    publication_year, 
+                    jif),
+    by = c("source_title", 
+           "publication_year")) %>% 
+  dplyr::relocate(jif, .after = "publication_year")
+
+# view(df_publication_jif)
+
+# check for NA values (i.e., publications with no available matching JIF)
+na_values = df_publication_jif[is.na(df_publication_jif$jif), ] 
+
+view(na_values) # 61 with no available matching JIF
+```
+
+Save this formatted data for use in analysis:
+```{r}
+write_csv(df_publication_jif, "data/publication_clean.csv")
+```
+
+:::{.panel-tabset}
+
+### Load Data
+```{r}
+df_publication_clean = read_csv("data/publication_clean.csv") %>% as_tibble()
+```
+
+### Quick Check
+```{r}
+head(df_publication_clean)
+tail(df_publication_clean)
+```
+
+:::
+
+#### Citizen Science Project-Publication Cases
+
+*Final dataset 2) `data/csp_publication_clean.csv` where *each row is a unique citizen science project-publication combination*, to facilitate analysis at the level of the citizen science project.*
+
+We separated out each unique citizen science project-publication case through a mix of data extraction in [Covidence](https://www.covidence.org/){target="_blank"} and Excel.
+
+Next, the use of citizen science terms for each unique citizen science project in a publication was reviewed. Each unique citizen science project-publication (going forward, project-publication) case was assigned a transparency score (`transp_score`, 0 to 4) based on our scoring system.
+
+Where possible, regional versions of citizen science projects were grouped (`cs_project_grouped`, for example, all provincial Breeding Bird Atlases were grouped under Breeding Bird Atlas).
+
+The resulting intermediate dataset follows:
+
+:::{.panel-tabset}
+
+### Load Data
+```{r}
+df_csp_pub_intermediate = read_csv("data/csp_publication_intermediate.csv") %>% as_tibble()
+```
+
+### Quick Check
+```{r}
+head(df_csp_pub_intermediate)
+tail(df_csp_pub_intermediate)
+```
+
+:::
+
+For each project-publication case, we assigned a transparency group (`transp_group`; transparent, or not transparent).
+
+```{r}
+#| code-fold: true
+
+# categorize into transparent or not transparent
+df_csp_publication = 
+  df_csp_pub_intermediate %>% 
+  mutate(transp_group = case_when(
+    transp_score <=2 ~ "Not transparent",
+    transp_score >=3 ~ "Transparent")) %>% 
+  dplyr::relocate(transp_group, .after = transp_score)
+
+# also prepare data for logistic regression (1 = transparent, 0 = not transparent)
+df_csp_publication = df_csp_publication %>% 
+  filter(transp_group %in% 
+           c("Transparent", 
+             "Not transparent")) %>% 
+  mutate(
+    transp_binary = ifelse(transp_group == "Transparent", 1, 0),
+    cs_project_grouped = as.factor(cs_project_grouped),
+    publication_year = as.numeric(publication_year)
+  ) %>% 
+  dplyr::relocate(transp_binary, .after = transp_group)
+```
+
+Save this formatted data for use in analysis:
+```{r}
+write_csv(df_csp_publication, "data/csp_publication_clean.csv")
+```
+
+:::{.panel-tabset}
+
+### Load Data
+```{r}
+df_csp_publication_clean = read_csv("data/csp_publication_clean.csv") %>% as_tibble()
+```
+
+### Quick Check
+```{r}
+head(df_csp_publication_clean)
+tail(df_csp_publication_clean)
+```
+
+:::
+
+

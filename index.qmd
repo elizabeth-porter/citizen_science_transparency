@@ -1,4 +1,5 @@
-# citizen_science_transparency
+# Unsung Scientists
+## *Citizen Science Data Use Transparency*
 
 <!-- badges: start -->
 [![DOI]](link) 
@@ -9,6 +10,4 @@ Project directed and coded by *Elizabeth Porter* with research in collaboration 
 
 This is the data exploration and analysis of Canadian citizen science data use transparency in the peer-reviewed literature. 
 
-In preparation for submission to Frontiers in Ecology and the Environment.
-
-All analyses and outputs can be read on the Analysis Website:
+In preparation for submission to Frontiers in Ecology and the Environment. 

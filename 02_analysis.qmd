@@ -1,0 +1,182 @@
+---
+title: "Analysis"
+code-fold: true
+fig-dpi: 600
+---
+
+## Background
+
+This is the data exploration and analysis for the manuscript.
+
+## Setup
+```{r}
+#| include: false
+knitr::opts_chunk$set(autodep = TRUE)
+```
+
+```{r}
+#| message: false
+#| code-fold: false
+{ # load necessary packages & preferred settings
+  library(tidyverse)
+  library(viridis)
+  library(devtools)
+  
+  theme_set(theme_light())}
+```
+
+## Load Cleaned Data
+The following code uses the datasets created in the Initial Exploration that precedes the Analysis section. The datasets are saved to CSV as `data/csp_publication.csv` (each row is a unique citizen science project-publication combination) and `data/publication.csv` (each row is an individual publication).  
+```{r}
+#| message: false
+#| code-fold: false
+
+# Unique citizen science project-publication combinations (N = 377)
+df_csp = read_csv("data/csp_publication_clean.csv")
+
+# Individual publications (N = 277)
+df_pub = read_csv("data/publication_clean.csv")
+```
+
+## Data Exploration
+### Citizen Science Projects
+```{r}
+df_csp %>% 
+  group_by(cs_project_grouped) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count)) %>% 
+  print(n = "all")
+```
+
+### Citizen Science Terminology
+```{r}
+```
+
+### Number of Citizen Science Projects
+```{r}
+# all counts
+df_pub %>% 
+  group_by(cs_count) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count)) %>% 
+  print(n = "all")
+
+# one use vs 2+ uses
+df_pub %>% 
+  mutate(cs_count_group = case_when(
+    cs_count == 1 ~ "1",
+    cs_count >= 2 ~ "2+"
+    )) %>% 
+  group_by(cs_count_group) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count)) %>% 
+  print(n = "all")
+```
+
+**Is there a change in how many citizen science projects are used per publication over time?**\
+\
+*Logistic regression model (1 = multiple data sets, 0 = single dataset)*
+
+```{r}
+df_pub$multiple_datasets = ifelse(df_pub$cs_count >= 2, 1, 0)
+
+model_logit_multi = glm(multiple_datasets ~ publication_year, family = binomial, data = df_pub)
+
+summary(model_logit_multi)
+```
+
+**Which projects are used most frequently on their own? Which most frequently alongside others?**
+```{r}
+df_csp %>% 
+  count(cs_count, cs_project_grouped) %>% 
+  tidyr::pivot_wider(
+    names_from = cs_project_grouped,
+    values_from = n,
+    values_fill = 0
+  ) %>% 
+  janitor::adorn_totals(c("row"))
+```
+
+### Transparency
+**Is citizen science acknowledged at all in the publication?**
+```{r}
+df_csp %>% 
+  mutate(y_n = case_when(
+    transp_rank == 0 ~ "No",
+    transp_rank >= 1 ~ "Yes"))%>% 
+  group_by(y_n) %>% 
+  summarise(count = n())
+```
+**What is the frequency of transparent vs not transparent attribution cases for each citizen science project?**
+```{r}
+transp_rank_crosstab = 
+df_csp %>% 
+  group_by(rank_group, 
+           cs_project_grouped) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  spread(cs_project_grouped, count, fill = 0)
+
+transp_rank_crosstab
+
+chi_test_result = chisq.test(transp_rank_crosstab[ , -1], simulate.p.value = T)
+print(chi_test_result)
+
+df_csp %>%
+  count(cs_project_grouped, 
+        rank_group, 
+        name = "count") %>% # Count observations per category
+  ggplot(aes(x = reorder(cs_project_grouped, 
+                         count), # reorder columns by desc count
+             y = count, 
+             fill = rank_group)) +  
+  geom_bar(stat = "identity") +  
+  labs(x = "Citizen Science Project", 
+       y = "Number of Cases") +
+  scale_fill_manual(values = c("Transparent" = "#ffc000", 
+                               "Not transparent" = "#156082")) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+```
+
+## Visualizations
+```{r}
+df_csp %>% 
+  group_by(publication_year, transparency_bin) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  mutate(status = ifelse(transparency_bin == 1, "Transparent", "Not Transparent")) %>%
+  ggplot(aes(x = factor(publication_year),
+             y = count,
+             fill = status)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Publication Year",
+       y = "Number of Cases") +
+  scale_fill_manual(values = c("Transparent" = "#ffc000",
+                               "Not Transparent" = "#156082")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),
+        legend.position = "bottom",
+        legend.title = element_blank())
+```
+## Main Figure
+```{r}
+df_csp %>% 
+  group_by(publication_year, transparency_bin) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  mutate(status = ifelse(transparency_bin == 1, "Transparent", "Not Transparent")) %>%
+  ggplot(aes(x = publication_year,
+             y = count,
+             fill = status)) +
+  geom_area(alpha = 0.8) +
+  scale_fill_manual(values = c("Transparent" = "#ffc000",
+                               "Not Transparent" = "#156082")) +
+  labs(x = "Publication Year",
+       y = "Number of Cases") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+```
+
+
+
+
