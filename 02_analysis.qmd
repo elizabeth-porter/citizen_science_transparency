@@ -17,12 +17,13 @@ knitr::opts_chunk$set(autodep = TRUE)
 ```{r}
 #| message: false
 #| code-fold: false
-{ # load necessary packages & preferred settings
+
+# load necessary packages & preferred settings
   library(tidyverse)
   library(viridis)
   library(devtools)
   
-  theme_set(theme_light())}
+  theme_set(theme_light())
 ```
 
 ## Load Cleaned Data
@@ -114,18 +115,18 @@ df_csp %>%
   summarise(count = n())
 ```
 
-**What is the frequency of transparent vs not transparent attribution cases for each citizen science project?** Ask Karl about simulated p value?
+**What is the frequency of transparent vs not transparent attribution cases for each citizen science project?** 
 ```{r}
-transp_rank_crosstab = 
+transp_group_crosstab = 
 df_csp %>% 
   group_by(transp_group, 
            cs_project_grouped) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   spread(cs_project_grouped, count, fill = 0)
 
-transp_rank_crosstab
+transp_group_crosstab
 
-chi_test_result = chisq.test(transp_rank_crosstab[ , -1], simulate.p.value = T)
+chi_test_result = chisq.test(transp_group_crosstab[ , -1], simulate.p.value = T)
 print(chi_test_result)
 
 df_csp %>%

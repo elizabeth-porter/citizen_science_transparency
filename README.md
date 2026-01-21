@@ -12,3 +12,5 @@ This is the data exploration and analysis of Canadian citizen science data use t
 In preparation for submission to Frontiers in Ecology and the Environment.
 
 All analyses and outputs can be read on the Analysis Website:
+
+Layout based on Steffi LaZerte's [vulture migration Analysis Website](https://github.com/steffilazerte/vulture_migration).
