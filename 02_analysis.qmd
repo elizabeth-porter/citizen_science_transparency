@@ -204,7 +204,7 @@ anova(model_2, model_3, test = "Chisq")
 ```
 
 ### 4) Transparency ~ Publication Year + Citizen Science Project + Journal Impact Factor
-#```{r}
+```{r}
 model_4 = glm(transp_binary ~ publication_year + cs_project_grouped + jif, 
               data = df_csp, 
               family = binomial)
