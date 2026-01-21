@@ -101,17 +101,24 @@ df_csp %>%
 **Is citizen science acknowledged at all in the publication?**
 ```{r}
 df_csp %>% 
-  mutate(y_n = case_when(
-    transp_rank == 0 ~ "No",
-    transp_rank >= 1 ~ "Yes"))%>% 
+    mutate(y_n = case_when(
+    transp_score == 0 ~ "No",
+    transp_score >= 1 ~ "Yes"))%>% 
   group_by(y_n) %>% 
   summarise(count = n())
 ```
-**What is the frequency of transparent vs not transparent attribution cases for each citizen science project?**
+**How many project-publication cases are transparent?**
+```{r}
+df_csp %>% 
+  group_by(transp_group) %>% 
+  summarise(count = n())
+```
+
+**What is the frequency of transparent vs not transparent attribution cases for each citizen science project?** Ask Karl about simulated p value?
 ```{r}
 transp_rank_crosstab = 
 df_csp %>% 
-  group_by(rank_group, 
+  group_by(transp_group, 
            cs_project_grouped) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   spread(cs_project_grouped, count, fill = 0)
@@ -123,12 +130,12 @@ print(chi_test_result)
 
 df_csp %>%
   count(cs_project_grouped, 
-        rank_group, 
+        transp_group, 
         name = "count") %>% # Count observations per category
   ggplot(aes(x = reorder(cs_project_grouped, 
                          count), # reorder columns by desc count
              y = count, 
-             fill = rank_group)) +  
+             fill = transp_group)) +  
   geom_bar(stat = "identity") +  
   labs(x = "Citizen Science Project", 
        y = "Number of Cases") +
@@ -138,13 +145,14 @@ df_csp %>%
   theme(legend.position = "bottom",
         legend.title = element_blank())
 ```
+**What do the publications look like over time?**
 
 ## Visualizations
 ```{r}
 df_csp %>% 
-  group_by(publication_year, transparency_bin) %>%
+  group_by(publication_year, transp_binary) %>%
   summarise(count = n(), .groups = "drop") %>%
-  mutate(status = ifelse(transparency_bin == 1, "Transparent", "Not Transparent")) %>%
+  mutate(status = ifelse(transp_binary == 1, "Transparent", "Not Transparent")) %>%
   ggplot(aes(x = factor(publication_year),
              y = count,
              fill = status)) +
@@ -158,12 +166,59 @@ df_csp %>%
         legend.position = "bottom",
         legend.title = element_blank())
 ```
+## Logistic Regressions 
+### 1) Transparency ~ Publication Year
+```{r}
+model_1 = glm(transp_binary ~ publication_year, 
+              data = df_csp, 
+              family = binomial)
+
+summary(model_1)
+
+```
+
+### 2) Transparency ~ Publication Year + Citizen Science Project
+```{r}
+model_2 = glm(transp_binary ~ publication_year + cs_project_grouped, 
+              data = df_csp, 
+              family = binomial)
+
+summary(model_2)
+
+# Compare model_1 & model_2
+anova(model_1, model_2, test = "Chisq")
+
+```
+
+### 3) Transparency ~ Publication Year * Citizen Science Project
+```{r}
+model_3 = glm(transp_binary ~ publication_year * cs_project_grouped, 
+              data = df_csp, 
+              family = binomial)
+
+summary(model_3)
+
+# Compare model_2 & model_3
+anova(model_2, model_3, test = "Chisq")
+
+```
+
+### 4) Transparency ~ Publication Year + Citizen Science Project + Journal Impact Factor
+#```{r}
+model_4 = glm(transp_binary ~ publication_year + cs_project_grouped + jif, 
+              data = df_csp, 
+              family = binomial)
+
+summary(model_4)
+
+```
+
 ## Main Figure
 ```{r}
 df_csp %>% 
-  group_by(publication_year, transparency_bin) %>%
+  group_by(publication_year, transp_binary) %>%
   summarise(count = n(), .groups = "drop") %>%
-  mutate(status = ifelse(transparency_bin == 1, "Transparent", "Not Transparent")) %>%
+  mutate(status = ifelse(transp_binary == 1, "Transparent", "Not Transparent")) %>%
   ggplot(aes(x = publication_year,
              y = count,
              fill = status)) +
