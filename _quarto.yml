@@ -1,11 +1,12 @@
 project: 
   type: website
   output-dir: docs
-  title: "**Unsung Scientists:** Canadian Citizen Science Data Use Transparency"
+  title: "Unsung Scientists"
   render: 
     - "*.qmd"
 
-website: 
+website:
+  site-url: https://elizabeth-porter.github.io/citizen_science_transparency
   sidebar: 
     style: "floating"
     search: true

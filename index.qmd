@@ -8,6 +8,6 @@
 
 Project directed and coded by *Elizabeth Porter* with research in collaboration with *Karl Cottenie*, *Adam C. Smith*, and *Shoshanah Jacobs*.
 
-This is the data exploration and analysis of Canadian citizen science data use transparency in the peer-reviewed literature. 
+This is the data exploration and analysis of Canadian citizen science bird data use transparency in the peer-reviewed literature. 
 
 Submitted to Frontiers in Ecology and the Environment. 

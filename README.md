@@ -2,14 +2,14 @@
 
 <!-- badges: start -->
 [![DOI]](link) 
-![DOI]() ![In Preparation](https://img.shields.io/badge/status-In_Preparation-yellow)
+![DOI]() ![Submitted](https://img.shields.io/badge/status-Submitted-yellow)
 <!-- badges: end -->
 
 Project directed and coded by *Elizabeth Porter* with research in collaboration with *Karl Cottenie*, *Adam C. Smith*, and *Shoshanah Jacobs*.
 
-This is the data exploration and analysis of Canadian citizen science data use transparency in the peer-reviewed literature. 
+This is the data exploration and analysis of Canadian citizen science bird data use transparency in the peer-reviewed literature. 
 
-In preparation for submission to Frontiers in Ecology and the Environment.
+Submitted to Frontiers in Ecology and the Environment.
 
 All analyses and outputs can be read on the Analysis Website:
 
