@@ -19,7 +19,6 @@ knitr::opts_chunk$set(autodep = TRUE)
 #| code-fold: false
 # load necessary packages & preferred settings
   library(tidyverse)
-  library(viridis)
 
   theme_set(theme_light())
 ```
@@ -144,9 +143,8 @@ df_csp %>%
   theme(legend.position = "bottom",
         legend.title = element_blank())
 ```
-**What do the publications look like over time?**
+**What is the frequeny of publications over time?**
 
-## Visualizations
 ```{r}
 df_csp %>% 
   group_by(publication_year, transp_binary) %>%

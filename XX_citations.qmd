@@ -12,6 +12,4 @@ title: "Citations"
 cat("\n#### tidyverse (for general data management and figures)\n")
 citation("tidyverse") |> print(style = "text")
 
-cat("\n#### viridis (for accessible colour palettes)\n")
-citation("viridis") |> print(style = "text")
 ```

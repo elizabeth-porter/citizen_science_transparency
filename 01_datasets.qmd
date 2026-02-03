@@ -16,8 +16,7 @@ This is the initial data cleaning and manipulations to create the final datasets
 #| code-fold: false
 # load necessary packages & preferred settings
   library(tidyverse)
-  library(viridis)
-  
+
   theme_set(theme_light())
 ```
 
