@@ -17,12 +17,10 @@ knitr::opts_chunk$set(autodep = TRUE)
 ```{r}
 #| message: false
 #| code-fold: false
-
 # load necessary packages & preferred settings
   library(tidyverse)
   library(viridis)
-  library(devtools)
-  
+
   theme_set(theme_light())
 ```
 

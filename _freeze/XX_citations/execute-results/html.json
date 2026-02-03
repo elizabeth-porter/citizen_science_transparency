@@ -1,0 +1,14 @@
+{
+  "hash": "b3f0b0c2cee377b583a5f06c3504e79f",
+  "result": {
+    "markdown": "---\ntitle: \"Citations\"\n---\n\n\n### Packages\n\n\n\n#### tidyverse (for general data management and figures)\nWickham H, Averick M, Bryan J, Chang W, McGowan LD, François R,\nGrolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E,\nBache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi\nK, Vaughan D, Wilke C, Woo K, Yutani H (2019). \"Welcome to the\ntidyverse.\" _Journal of Open Source Software_, *4*(43), 1686.\ndoi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.\n\n#### viridis (for accessible colour palettes)\nGarnier, Simon, Ross, Noam, Rudis, Robert, Camargo, Pedro A, Sciaini,\nMarco, Scherer, Cédric (2024). _viridis(Lite) - Colorblind-Friendly\nColor Maps for R_. doi:10.5281/zenodo.4679423\n<https://doi.org/10.5281/zenodo.4679423>, viridis package version\n0.6.5, <https://sjmgarnier.github.io/viridis/>.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

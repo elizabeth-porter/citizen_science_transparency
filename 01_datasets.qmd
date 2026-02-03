@@ -14,12 +14,11 @@ This is the initial data cleaning and manipulations to create the final datasets
 ```{r}
 #| message: false
 #| code-fold: false
-{ # load necessary packages & preferred settings
+# load necessary packages & preferred settings
   library(tidyverse)
   library(viridis)
-  library(devtools)
   
-  theme_set(theme_light())}
+  theme_set(theme_light())
 ```
 
 ## Load and Clean Data
