@@ -6,7 +6,6 @@ project:
     - "*.qmd"
 
 website:
-  site-url: https://elizabeth-porter.github.io/citizen_science_transparency
   sidebar: 
     style: "floating"
     search: true
