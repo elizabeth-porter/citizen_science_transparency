@@ -1,7 +1,7 @@
 # citizen_science_transparency
 
 <!-- badges: start -->
-[![DOI]](link) 
+[![DOI](https://zenodo.org/badge/1121814319.svg)](https://doi.org/10.5281/zenodo.18474899)
 ![DOI]() ![Submitted](https://img.shields.io/badge/status-Submitted-yellow)
 <!-- badges: end -->
 
